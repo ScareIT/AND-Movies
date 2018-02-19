@@ -17,9 +17,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.scareweb.popularmovies.models.Movie;
+
 public class MainActivity extends AppCompatActivity {
 
     private final String MOVIEDB_URL_PREFIX = "http://api.themoviedb.org/3/movie/popular?";
+
+    private List<Movie> movieList;
 
     private TextView title1;
     private TextView title2;
@@ -29,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        movieList = new ArrayList<>();
 
         title1 = findViewById(R.id.title_tv);
         title2 = findViewById(R.id.title2_tv);
@@ -40,9 +46,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setTitles(List<String> titles) {
-            title1.setText(titles.get(0));
-            title2.setText(titles.get(1));
+    private void setTitles() {
+        String complete = "";
+        for (Movie movie:
+             movieList) {
+            complete += movie.getTitle()  + "\n";
+        }
+            title1.setText(complete);
+            title2.setText("Seconda riga");
     }
 
     private void internet() throws MalformedURLException {
@@ -56,27 +67,11 @@ public class MainActivity extends AppCompatActivity {
         new GetMovies().execute(url);
     }
 
-    private class GetMovies extends AsyncTask<URL, String, List<String>> {
+    private class GetMovies extends AsyncTask<URL, String, Void> {
 
-        @Override
-        protected List<String> doInBackground(URL... urls) {
 
-            try {
-                return internet(urls[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(List<String> strings) {
-            super.onPostExecute(strings);
-            setTitles(strings);
-        }
-
-        public List<String> internet(URL url) throws IOException {
+        public void internet(URL url) throws IOException {
 
 
             HttpURLConnection urlConnection = (HttpURLConnection) url
@@ -89,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             JsonReader reader = new JsonReader(inReader);
 
             try {
-                return readMessagesArray(reader);
+                readMessagesArray(reader);
             } finally {
                 reader.close();
             }
@@ -97,48 +92,66 @@ public class MainActivity extends AppCompatActivity {
             //    InputStreamReader isw = new InputStreamReader(in);
         }
 
-        private List<String> readMessagesArray(JsonReader reader) throws IOException {
-            List<String> messages = null; //= new ArrayList<String>();
+        private void readMessagesArray(JsonReader reader) throws IOException {
+
 
             reader.beginObject();
             while (reader.hasNext()) {
                 String name = reader.nextName();
                 if (name.equals("results")) {
-                    messages = readMovie(reader);
+                    readMovie(reader);
                 } else {
                     reader.skipValue();
                 }
             }
             reader.endObject();
-            return messages;
         }
 
-        public List<String> readMovie(JsonReader reader) throws IOException {
-            List<String> titles = new ArrayList<>();
+        public void readMovie(JsonReader reader) throws IOException {
+            //List<String> titles = new ArrayList<>();
 
             reader.beginArray();
             while (reader.hasNext()) {
-                 titles.add(readTitle(reader));
+                 movieList.add(readTitle(reader));
             }
 
             reader.endArray();
-            return titles;
         }
 
-        public String readTitle(JsonReader reader) throws IOException {
+        public Movie readTitle(JsonReader reader) throws IOException {
             String title = "";
+            String picture = "";
             reader.beginObject();
             while (reader.hasNext()) {
                 String name = reader.nextName();
                 if (name.equals("title")) {
                     title = reader.nextString();
-                } else {
+                } else if (name.equals("poster_path")) {
+                    picture = reader.nextString();
+                }
+                else {
                     reader.skipValue();
                 }
             }
 
             reader.endObject();
-            return title;
+            return new Movie(title, picture);
+        }
+
+        @Override
+        protected Void doInBackground(URL... urls) {
+            try {
+                internet(urls[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            setTitles();
         }
     }
 
