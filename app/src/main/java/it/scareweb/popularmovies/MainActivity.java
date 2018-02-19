@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private void internet() throws MalformedURLException {
         Uri builtUri = Uri.parse(MOVIEDB_URL_PREFIX)
                 .buildUpon()
-                .appendQueryParameter("api_key", "")
+                .appendQueryParameter("api_key", getString(R.string.key_v3_auth))
                 .build();
 
         URL url = new URL(builtUri.toString());
