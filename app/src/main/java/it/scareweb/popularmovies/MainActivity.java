@@ -5,8 +5,14 @@ import android.os.AsyncTask;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.JsonReader;
+import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,8 +31,12 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Movie> movieList;
 
+    private GridLayout movieGrid;
     private TextView title1;
     private TextView title2;
+
+    private MovieListAdapter movieListAdapter;
+    private RecyclerView mRecyclerView;
 
 
     @Override
@@ -36,8 +46,20 @@ public class MainActivity extends AppCompatActivity {
 
         movieList = new ArrayList<>();
 
-        title1 = findViewById(R.id.title_tv);
-        title2 = findViewById(R.id.title2_tv);
+        movieListAdapter = new MovieListAdapter();
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setReverseLayout(false);
+
+        mRecyclerView = findViewById(R.id.recyclerview_movies);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(movieListAdapter);
+
+//        title1 = findViewById(R.id.title_tv);
+//        title2 = findViewById(R.id.title2_tv);
+        //movieGrid = findViewById(R.id.movies_gridl);
 
         try {
             internet();
@@ -52,8 +74,24 @@ public class MainActivity extends AppCompatActivity {
              movieList) {
             complete += movie.getTitle()  + "\n";
         }
-            title1.setText(complete);
-            title2.setText("Seconda riga");
+
+
+
+//        Picasso.with(this)
+//                .load("http://image.tmdb.org/t/p/w185" + movieList.get(0).getPicture())
+//                .into(oneImg);
+//        Picasso.with(this)
+//                .load("http://image.tmdb.org/t/p/w185" + movieList.get(2).getPicture())
+//                .into(oneImg3);
+//        Picasso.with(this)
+//                .load("http://image.tmdb.org/t/p/w185" + movieList.get(3).getPicture())
+//                .into(oneImg4);
+//        Picasso.with(this)
+//                .load("http://image.tmdb.org/t/p/w185" + movieList.get(1).getPicture())
+//                .into(oneImg2);
+
+        title1.setText(complete);
+        title2.setText("Seconda riga");
     }
 
     private void internet() throws MalformedURLException {
@@ -151,7 +189,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            setTitles();
+            //setTitles();
+            movieListAdapter.setMovieTitles(movieList);
         }
     }
 
