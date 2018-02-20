@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">I Film più popolari</string>
+    <string name="introduction_text">Tocca una locandina per vedere i dettagli del film!</string>
+    <string name="orderby">Ordina per</string>
+    <string name="most_popular">Più popolari</string>
+    <string name="top_rated">Più votati</string>
+</resources>

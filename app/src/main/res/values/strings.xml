@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Popular Movies App</string>
+    <string name="introduction_text">Tap a movie to see its details!</string>
+    <string name="orderby">Order by</string>
+    <string name="most_popular">Most popular</string>
+    <string name="top_rated">Top rated</string>
 </resources>
