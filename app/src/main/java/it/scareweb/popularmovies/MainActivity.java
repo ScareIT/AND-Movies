@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.JsonReader;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.scareweb.popularmovies.models.Movie;
+
+import static android.view.Window.FEATURE_NO_TITLE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         movieListAdapter = new MovieListAdapter();
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        layoutManager.setOrientation(GridLayoutManager.VERTICAL);
         layoutManager.setReverseLayout(false);
 
         mRecyclerView = findViewById(R.id.recyclerview_movies);
