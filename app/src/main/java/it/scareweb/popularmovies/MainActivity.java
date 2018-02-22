@@ -75,9 +75,8 @@ public class MainActivity extends AppCompatActivity {
         String complete = "";
         for (Movie movie:
              movieList) {
-            complete += movie.getTitle()  + "\n";
+            complete += movie.getTitle() + "\n";
         }
-
 //        Picasso.with(this)
 //                .load("http://image.tmdb.org/t/p/w185" + movieList.get(0).getPicture())
 //                .into(oneImg);

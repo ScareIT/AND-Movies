@@ -1,12 +1,14 @@
 package it.scareweb.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -26,7 +28,28 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     private String[] movieTitles;
     private List<Movie> movies;
 
-    public MovieListAdapter() {}
+    private View.OnClickListener movieClickListener;
+
+
+
+    public MovieListAdapter() {
+        movieClickListener = new View.OnClickListener() {
+            Context context;
+            public void onClick(View v) {
+                context = v.getContext();
+                CharSequence text = "Hello toast!";
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast.makeText(this.context, text, duration).show();
+
+                Intent intent = new Intent(v.getContext(), MovieDetails.class);
+                intent.putExtra("MOVIE_TITLE", movies.get(0).getTitle());
+                //intent.putExtra("chartLink", ChartLink);
+                //startActivity(intent);
+                this.context.startActivity(intent);
+            }
+        };
+    }
 
     @Override
     public MovieListAdapter.MovieListAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -43,6 +66,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
         Picasso.with(holder.moviePicture.getContext())
         .load("http://image.tmdb.org/t/p/w185" + movies.get(position).getPicture())
         .into(holder.moviePicture);
+        holder.moviePicture.setOnClickListener(movieClickListener);
     }
 
     @Override
