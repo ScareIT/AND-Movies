@@ -1,5 +1,6 @@
 package it.scareweb.popularmovies;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Message;
@@ -26,6 +27,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import it.scareweb.popularmovies.models.Movie;
 
 import static android.view.Window.FEATURE_NO_TITLE;
@@ -37,34 +40,29 @@ public class MainActivity extends AppCompatActivity {
     private List<Movie> movieList;
 
     private GridLayout movieGrid;
-    private TextView title1;
-    private TextView title2;
 
     private MovieListAdapter movieListAdapter;
-    private RecyclerView mRecyclerView;
+
+    @BindView(R.id.recyclerview_movies)
+    RecyclerView mRecyclerView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         movieList = new ArrayList<>();
-
         movieListAdapter = new MovieListAdapter();
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         layoutManager.setOrientation(GridLayoutManager.VERTICAL);
         layoutManager.setReverseLayout(false);
 
-        mRecyclerView = findViewById(R.id.recyclerview_movies);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(movieListAdapter);
-
-//        title1 = findViewById(R.id.title_tv);
-//        title2 = findViewById(R.id.title2_tv);
-        //movieGrid = findViewById(R.id.movies_gridl);
 
         try {
             internet();
@@ -80,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
             complete += movie.getTitle()  + "\n";
         }
 
-
-
 //        Picasso.with(this)
 //                .load("http://image.tmdb.org/t/p/w185" + movieList.get(0).getPicture())
 //                .into(oneImg);
@@ -95,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
 //                .load("http://image.tmdb.org/t/p/w185" + movieList.get(1).getPicture())
 //                .into(oneImg2);
 
-        title1.setText(complete);
-        title2.setText("Seconda riga");
     }
 
     private void internet() throws MalformedURLException {

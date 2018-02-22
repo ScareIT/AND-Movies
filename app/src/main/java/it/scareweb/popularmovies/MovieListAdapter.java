@@ -1,5 +1,6 @@
 package it.scareweb.popularmovies;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import it.scareweb.popularmovies.models.Movie;
 
 /**
@@ -51,19 +54,19 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     }
 
     public void setMovieTitles(List<Movie> movieList) {
-        movies = movieList;
+        this.movies = movieList;
         notifyDataSetChanged();
     }
 
     public class MovieListAdapterViewHolder extends RecyclerView.ViewHolder {
       //  public final TextView movieTitle;
-        public final ImageView moviePicture;
+
+        @BindView(R.id.movie_picture_iv)
+        ImageView moviePicture;
 
         public MovieListAdapterViewHolder(View itemView) {
             super(itemView);
-       //     movieTitle = itemView.findViewById(R.id.movie_title_tv);
-            moviePicture = itemView.findViewById(R.id.movie_picture_iv);
-
+            ButterKnife.bind(this,itemView);
         }
     }
 }
