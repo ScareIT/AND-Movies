@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import it.scareweb.popularmovies.models.Movie;
 
 public class MovieDetails extends AppCompatActivity {
     Intent intent;
@@ -21,6 +22,7 @@ public class MovieDetails extends AppCompatActivity {
         ButterKnife.bind(this);
 
         intent = getIntent();
-        bigTitle.setText(intent.getStringExtra("MOVIE_TITLE"));
+        Movie selectedMovie = (Movie)intent.getSerializableExtra("MOVIE");
+        bigTitle.setText(selectedMovie.getTitle());
     }
 }

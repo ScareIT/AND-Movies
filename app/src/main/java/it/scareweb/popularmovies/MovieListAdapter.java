@@ -7,12 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -23,7 +20,7 @@ import it.scareweb.popularmovies.models.Movie;
  * Created by luca on 20/02/2018.
  */
 
-public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieListAdapterViewHolder>{
+public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieListAdapterViewHolder> {
 
     private String[] movieTitles;
     private List<Movie> movies;
@@ -31,26 +28,9 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     private View.OnClickListener movieClickListener;
 
 
+    public MovieListAdapter() {}
 
-    public MovieListAdapter() {
-        movieClickListener = new View.OnClickListener() {
-            Context context;
-            public void onClick(View v) {
-                context = v.getContext();
-                CharSequence text = "Hello toast!";
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast.makeText(this.context, text, duration).show();
-
-                Intent intent = new Intent(v.getContext(), MovieDetails.class);
-                intent.putExtra("MOVIE_TITLE", movies.get(0).getTitle());
-                //intent.putExtra("chartLink", ChartLink);
-                //startActivity(intent);
-                this.context.startActivity(intent);
-            }
-        };
-    }
-
+    // viewType: progressivo vista creata adesso
     @Override
     public MovieListAdapter.MovieListAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -60,18 +40,18 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
         return viewHolder;
     }
 
+    // position: progressivo vista creata in tutto
     @Override
     public void onBindViewHolder(MovieListAdapter.MovieListAdapterViewHolder holder, int position) {
-       // holder.movieTitle.setText(movies.get(position).getTitle());
+        // holder.movieTitle.setText(movies.get(position).getTitle());
         Picasso.with(holder.moviePicture.getContext())
-        .load("http://image.tmdb.org/t/p/w185" + movies.get(position).getPicture())
-        .into(holder.moviePicture);
-        holder.moviePicture.setOnClickListener(movieClickListener);
+                .load("http://image.tmdb.org/t/p/w185" + movies.get(position).getPicture())
+                .into(holder.moviePicture);
     }
 
     @Override
     public int getItemCount() {
-        if(movies != null) {
+        if (movies != null) {
             return movies.size();
         }
         return 0;
@@ -82,15 +62,25 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
         notifyDataSetChanged();
     }
 
-    public class MovieListAdapterViewHolder extends RecyclerView.ViewHolder {
-      //  public final TextView movieTitle;
+    public class MovieListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private Context context;
 
         @BindView(R.id.movie_picture_iv)
         ImageView moviePicture;
 
         public MovieListAdapterViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            context = itemView.getContext();
+            ButterKnife.bind(this, itemView);
+            moviePicture.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int selectedMovie = getAdapterPosition();
+            Intent intent = new Intent(this.context, MovieDetails.class);
+            intent.putExtra("MOVIE", movies.get(selectedMovie));
+            this.context.startActivity(intent);
         }
     }
 }
