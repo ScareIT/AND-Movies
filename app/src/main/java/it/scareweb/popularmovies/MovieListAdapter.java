@@ -21,13 +21,7 @@ import it.scareweb.popularmovies.models.Movie;
  */
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieListAdapterViewHolder> {
-
-    private String[] movieTitles;
     private List<Movie> movies;
-
-    private View.OnClickListener movieClickListener;
-
-
     public MovieListAdapter() {}
 
     // viewType: progressivo vista creata adesso

@@ -1,6 +1,8 @@
 package it.scareweb.popularmovies;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Message;
@@ -12,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.JsonReader;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,6 +27,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +47,16 @@ public class MainActivity extends AppCompatActivity {
 
     private MovieListAdapter movieListAdapter;
 
+    Context context;
+
     @BindView(R.id.recyclerview_movies)
     RecyclerView mRecyclerView;
+
+    @BindView(R.id.intro)
+    TextView tIntro;
+
+    @BindView(R.id.no_connection_alert)
+    TextView tNoConnection;
 
 
     @Override
@@ -53,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        context = this;
         movieList = new ArrayList<>();
         movieListAdapter = new MovieListAdapter();
 
@@ -71,27 +84,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setTitles() {
-        String complete = "";
-        for (Movie movie:
-             movieList) {
-            complete += movie.getTitle() + "\n";
-        }
-//        Picasso.with(this)
-//                .load("http://image.tmdb.org/t/p/w185" + movieList.get(0).getPicture())
-//                .into(oneImg);
-//        Picasso.with(this)
-//                .load("http://image.tmdb.org/t/p/w185" + movieList.get(2).getPicture())
-//                .into(oneImg3);
-//        Picasso.with(this)
-//                .load("http://image.tmdb.org/t/p/w185" + movieList.get(3).getPicture())
-//                .into(oneImg4);
-//        Picasso.with(this)
-//                .load("http://image.tmdb.org/t/p/w185" + movieList.get(1).getPicture())
-//                .into(oneImg2);
-
-    }
-
     private void internet() throws MalformedURLException {
         Uri builtUri = Uri.parse(MOVIEDB_URL_PREFIX)
                 .buildUpon()
@@ -100,18 +92,38 @@ public class MainActivity extends AppCompatActivity {
 
         URL url = new URL(builtUri.toString());
 
+        if(!isInternetAvailable()) {
+            tNoConnection.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        tIntro.setVisibility(View.VISIBLE);
+
         new GetMovies().execute(url);
+    }
+
+    private boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+        if(networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+
+        return false;
     }
 
     private class GetMovies extends AsyncTask<URL, String, Void> {
 
-
-
         public void internet(URL url) throws IOException {
 
-
-            HttpURLConnection urlConnection = (HttpURLConnection) url
-                    .openConnection();
+            HttpURLConnection urlConnection = null;
+            try {
+                urlConnection = (HttpURLConnection) url
+                        .openConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             InputStream in = urlConnection.getInputStream();
             InputStreamReader inReader = new InputStreamReader(in);
@@ -125,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
                 reader.close();
             }
 
-            //    InputStreamReader isw = new InputStreamReader(in);
         }
 
         private void readMessagesArray(JsonReader reader) throws IOException {
@@ -155,15 +166,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public Movie readTitle(JsonReader reader) throws IOException {
-            String title = "";
-            String picture = "";
+            Movie movie = new Movie();
             reader.beginObject();
+
             while (reader.hasNext()) {
                 String name = reader.nextName();
                 if (name.equals("title")) {
-                    title = reader.nextString();
+                    movie.setTitle(reader.nextString());
                 } else if (name.equals("poster_path")) {
-                    picture = reader.nextString();
+                    movie.setPicture(reader.nextString());
+                } else if (name.equals("vote_average")) {
+                    movie.setVote(reader.nextString());
+                } else if (name.equals("overview")) {
+                    movie.setPlot(reader.nextString());
+                } else if (name.equals("release_date")) {
+                    movie.setMovieReleaseDate(reader.nextString());
                 }
                 else {
                     reader.skipValue();
@@ -171,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             reader.endObject();
-            return new Movie(title, picture);
+            return movie;
         }
 
         @Override
@@ -198,6 +215,4 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.main, menu);
         return true;
     }
-
-
 }
