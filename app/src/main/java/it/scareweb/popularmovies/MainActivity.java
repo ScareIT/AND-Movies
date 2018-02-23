@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.JsonReader;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final String MovieDbUrl = SettingsAPI.BASE_URL;
 
+    private final String ORDER_BY_KEY = "ORDER_BY";
+
     private String MovieDbCurrentOption = SettingsAPI.OPTION_POPULAR;
 
     private List<Movie> movieList;
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private GridLayout movieGrid;
 
     private MovieListAdapter movieListAdapter;
+
+    boolean Popular;
 
     Context context;
 
@@ -53,10 +58,20 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.no_connection_alert)
     TextView tNoConnection;
 
+    MenuItem menuPopular;
+
+    MenuItem menuTopRated;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            this.Popular = savedInstanceState.getBoolean(ORDER_BY_KEY);
+        } else {
+            this.Popular = true;
+        }
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -79,7 +94,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState (Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ORDER_BY_KEY, this.Popular);
+    }
+
+    private void config() {
+        if(menuPopular != null) {
+            if (menuPopular.isChecked()) {
+                this.Popular = true;
+            } else {
+                this.Popular = false;
+            }
+
+        }
+
+        if(this.Popular) {
+            MovieDbCurrentOption = SettingsAPI.OPTION_POPULAR;
+        } else {
+            MovieDbCurrentOption = SettingsAPI.OPTION_TOP_RATED;
+        }
+    }
+
+
+
     private void internet() throws MalformedURLException {
+        config();
         Uri builtUri = Uri.parse(MovieDbUrl + MovieDbCurrentOption)
                 .buildUpon()
                 .appendQueryParameter("api_key", getString(R.string.key_v3_auth))
@@ -208,6 +249,40 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
+        menuPopular = menu.findItem(R.id.orderby_popular);
+        menuPopular.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                menuPopular.setChecked(true);
+                movieList.clear();
+                try {
+                    internet();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
+
+        menuTopRated = menu.findItem(R.id.orderby_toprated);
+        menuTopRated.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                menuTopRated.setChecked(true);
+                movieList.clear();
+                try {
+                    internet();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
+
+        if(!this.Popular) {
+            menuTopRated.setChecked(true);
+        }
+        
         return true;
     }
 }

@@ -8,7 +8,8 @@
         android:id="@+id/movie_picture_iv"
         android:adjustViewBounds="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"/>
 
     <TextView
         android:id="@+id/movie_title_tv"
