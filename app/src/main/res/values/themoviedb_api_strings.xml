@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_v3_auth" translatable="false">***PUT API KEY V3 HERE***</string>
+</resources>
