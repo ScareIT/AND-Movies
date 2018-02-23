@@ -11,6 +11,7 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import it.scareweb.popularmovies.models.Movie;
+import it.scareweb.popularmovies.models.SettingsAPI;
 
 public class MovieDetails extends AppCompatActivity {
     Intent intent;
@@ -44,7 +45,7 @@ public class MovieDetails extends AppCompatActivity {
         releaseDate.setText(selectedMovie.getMovieReleaseDate());
         poster.setContentDescription(selectedMovie.getTitle() + " poster");
         Picasso.with(this)
-                .load("http://image.tmdb.org/t/p/w185" + selectedMovie.getPicture())
+                .load(SettingsAPI.IMAGE_URL + SettingsAPI.IMAGE_SIZE_NORMAL + selectedMovie.getPicture())
                 .into(poster);
     }
 }

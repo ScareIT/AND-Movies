@@ -5,21 +5,16 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.JsonReader;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,19 +22,19 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import it.scareweb.popularmovies.models.Movie;
-
-import static android.view.Window.FEATURE_NO_TITLE;
+import it.scareweb.popularmovies.models.SettingsAPI;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String MOVIEDB_URL_PREFIX = "http://api.themoviedb.org/3/movie/popular?";
+    private final String MovieDbUrl = SettingsAPI.BASE_URL;
+
+    private String MovieDbCurrentOption = SettingsAPI.OPTION_POPULAR;
 
     private List<Movie> movieList;
 
@@ -85,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void internet() throws MalformedURLException {
-        Uri builtUri = Uri.parse(MOVIEDB_URL_PREFIX)
+        Uri builtUri = Uri.parse(MovieDbUrl + MovieDbCurrentOption)
                 .buildUpon()
                 .appendQueryParameter("api_key", getString(R.string.key_v3_auth))
                 .build();
