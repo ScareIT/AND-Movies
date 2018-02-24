@@ -5,4 +5,8 @@
     <string name="orderby">Ordina per</string>
     <string name="most_popular">Più popolari</string>
     <string name="top_rated">Più votati</string>
+    <string name="no_connection_alert">Nessuna connessione disponibile al momento, controlla lo stato della tua connessione a Internet e riprova.</string>
+    <string name="release_date_label">Data di uscita:</string>
+    <string name="rate_label">Voto medio:</string>
+    <string name="plot">Trama:</string>
 </resources>

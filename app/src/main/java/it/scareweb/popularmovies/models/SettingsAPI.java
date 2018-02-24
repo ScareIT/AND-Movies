@@ -1,5 +1,7 @@
 package it.scareweb.popularmovies.models;
 
+import it.scareweb.popularmovies.BuildConfig;
+
 /**
  * Created by luca on 23/02/2018.
  */
@@ -14,4 +16,6 @@ public class SettingsAPI {
     public static final String OPTION_POPULAR = "popular";
 
     public static final String OPTION_TOP_RATED = "top_rated";
+
+    public static final String API_KEY = BuildConfig.API_V3_KEY;
 }

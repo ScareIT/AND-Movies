@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         config();
         Uri builtUri = Uri.parse(MovieDbUrl + MovieDbCurrentOption)
                 .buildUpon()
-                .appendQueryParameter("api_key", getString(R.string.key_v3_auth))
+                .appendQueryParameter("api_key", SettingsAPI.API_KEY)
                 .build();
 
         URL url = new URL(builtUri.toString());
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
         if(!this.Popular) {
             menuTopRated.setChecked(true);
         }
-        
+
         return true;
     }
 }
