@@ -2,10 +2,14 @@ package it.scareweb.popularmovies.data;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import it.scareweb.popularmovies.database.DbManager;
 
 /**
  * Created by luca on 01/03/2018.
@@ -15,10 +19,15 @@ public class MovieProvider extends ContentProvider {
     public static final String AUTHORITY = "it.scareweb.popularmovies";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
+    private SQLiteDatabase movieDb;
+
 
     @Override
     public boolean onCreate() {
-        return false;
+        Context context = getContext();
+        DbManager dbHelper = new DbManager(context);
+        movieDb = dbHelper.getWritableDatabase();
+        return movieDb != null;
     }
 
     @Nullable
