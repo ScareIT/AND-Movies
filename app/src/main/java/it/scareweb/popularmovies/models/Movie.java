@@ -8,6 +8,7 @@ import java.io.Serializable;
 
                             // "Serializable" allows to pass the object as extra in an Intent
 public class Movie implements Serializable {
+    private int movieId;
     private String movieTitle;
     private String moviePicture;
     private String moviePlot;
@@ -20,6 +21,14 @@ public class Movie implements Serializable {
     public Movie(String title, String picture) {
         this.movieTitle = title;
         this.moviePicture = picture;
+    }
+
+    public int getId() {
+        return this.movieId;
+    }
+
+    public void setId(int movieId) {
+        this.movieId = movieId;
     }
 
     public String getPicture() {

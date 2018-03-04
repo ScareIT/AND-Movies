@@ -15,6 +15,7 @@ public class DbManager extends SQLiteOpenHelper {
 
     public static final String TABLE_FAVOURITE_MOVIES = "FavouriteMovies";
     public static final String MOVIE_ID = "_id";
+    public static final String MOVIE_TITLE = "movieTitle";
     public static final String MOVIE_POSTER = "moviePoster";
     public static final String MOVIE_SYNOPSIS = "movieSynopsis";
     public static final String MOVIE_VOTE = "movieVote";
@@ -31,7 +32,8 @@ public class DbManager extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         final String CREATE_MOVIE_TABLE =
                 "CREATE TABLE " + TABLE_FAVOURITE_MOVIES + " (" +
-                        MOVIE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        MOVIE_ID + " INTEGER PRIMARY KEY, " +
+                        MOVIE_TITLE + " TEXT, " +
                         MOVIE_POSTER + " BLOB, " +
                         MOVIE_SYNOPSIS + " TEXT, " +
                         MOVIE_RELEASE_DATE + " TEXT default CURRENT_TIMESTAMP, " +

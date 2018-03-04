@@ -22,7 +22,7 @@
         <activity android:name=".MovieDetails"></activity>
 
         <provider android:name="it.scareweb.popularmovies.data.MovieProvider"
-            android:authorities="it.scareweb.popularmovies.data"/>
+            android:authorities="it.scareweb.popularmovies"/>
     </application>
 
 </manifest>

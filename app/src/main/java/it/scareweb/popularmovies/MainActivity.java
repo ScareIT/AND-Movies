@@ -209,6 +209,8 @@ public class MainActivity extends AppCompatActivity {
                 String name = reader.nextName();
                 if (name.equals("title")) {
                     movie.setTitle(reader.nextString());
+                } else if (name.equals("id")) {
+                    movie.setId(reader.nextInt());
                 } else if (name.equals("poster_path")) {
                     movie.setPicture(reader.nextString());
                 } else if (name.equals("vote_average")) {
