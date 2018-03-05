@@ -49,15 +49,19 @@ public class MovieDetails extends AppCompatActivity {
 
     private int movieId;
 
+    private boolean movieSaved;
+
     Uri movies;
+
+    MovieDetails() {
+        movieSaved = false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
         ButterKnife.bind(this);
-
-        addToFavouritesIcon.setOnClickListener(addToFavouritesListener());
 
         intent = getIntent();
         Movie selectedMovie = (Movie)intent.getSerializableExtra("MOVIE");
@@ -74,26 +78,15 @@ public class MovieDetails extends AppCompatActivity {
         movies = MovieProvider.BASE_CONTENT_URI;
         movies = movies.buildUpon().appendPath(MovieProvider.PATH_FAVOURITES).build();
 
-        // *** Test with CProvider ***
+        setupAddToFavouritesIcon();
+    }
 
-        // Retrieve all movie records
-
-        Cursor c = getContentResolver().query(movies, null, null, null, null);
-
-        if (c!=null && c.moveToFirst()) {
-            do{
-                Log.i("movie", c.getString(c.getColumnIndex(DbManager.MOVIE_ID)) +
-                        ", " +  c.getString(c.getColumnIndex( DbManager.MOVIE_TITLE)) +
-                        ", " + c.getString(c.getColumnIndex( DbManager.MOVIE_VOTE)));
-                Toast.makeText(this,
-                        c.getString(c.getColumnIndex(DbManager.MOVIE_ID)) +
-                                ", " +  c.getString(c.getColumnIndex( DbManager.MOVIE_TITLE)) +
-                                ", " + c.getString(c.getColumnIndex( DbManager.MOVIE_VOTE)),
-                        Toast.LENGTH_SHORT).show();
-            } while (c.moveToNext());
+    private void setupAddToFavouritesIcon() {
+        movieSaved = movieIsFavourite();
+        addToFavouritesIcon.setOnClickListener(addToFavouritesListener());
+        if(movieSaved) {
+            addToFavouritesIcon.setColorFilter(getResources().getColor(R.color.favouriteIcon));
         }
-
-
     }
 
     private View.OnClickListener addToFavouritesListener() {
@@ -101,11 +94,16 @@ public class MovieDetails extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ImageButton ibv = (ImageButton)v;
-                ibv.setColorFilter(Color.parseColor("#AAFFBB33"));
 
-                if(!movieIsFavourite()) {
+                if(!movieSaved) {
                     addMovieToFavourites();
+                    ibv.setColorFilter(getResources().getColor(R.color.favouriteIcon));
+                    movieSaved = true;
+                } else {
+                    ibv.clearColorFilter();
+                    movieSaved = false;
                 }
+
             }
         };
     }
@@ -127,6 +125,15 @@ public class MovieDetails extends AppCompatActivity {
     }
 
     private boolean movieIsFavourite() {
+        Uri moviesOne = movies.buildUpon()
+                .appendPath(String.valueOf(movieId)).build();
+
+        Cursor c = getContentResolver().query(moviesOne, null, null, null, null);
+
+        if (c!=null && c.moveToFirst()) {
+            return true;
+        }
+
         return false;
     }
 }

@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Movie> movieList;
 
-    private GridLayout movieGrid;
-
     private MovieListAdapter movieListAdapter;
 
     boolean Popular;
