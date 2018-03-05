@@ -2,11 +2,17 @@ package it.scareweb.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.net.Uri;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,13 +44,20 @@ public class MovieDetails extends AppCompatActivity {
     @BindView(R.id.details_movie_poster)
     ImageView poster;
 
+    @BindView(R.id.add_to_favourites)
+    ImageButton addToFavouritesIcon;
+
     private int movieId;
+
+    Uri movies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
         ButterKnife.bind(this);
+
+        addToFavouritesIcon.setOnClickListener(addToFavouritesListener());
 
         intent = getIntent();
         Movie selectedMovie = (Movie)intent.getSerializableExtra("MOVIE");
@@ -58,24 +71,10 @@ public class MovieDetails extends AppCompatActivity {
                 .load(SettingsAPI.IMAGE_URL + SettingsAPI.IMAGE_SIZE_NORMAL + selectedMovie.getPicture())
                 .into(poster);
 
-        // *** Test with CProvider ***
-
-        Uri movies = MovieProvider.BASE_CONTENT_URI;
+        movies = MovieProvider.BASE_CONTENT_URI;
         movies = movies.buildUpon().appendPath(MovieProvider.PATH_FAVOURITES).build();
 
-        // Insertion
-        ContentValues values = new ContentValues();
-        values.put(DbManager.MOVIE_ID, movieId);
-        values.put(DbManager.MOVIE_TITLE,
-                bigTitle.getText().toString());
-        values.put(DbManager.MOVIE_VOTE,
-                vote.getText().toString());
-
-        Uri uri = getContentResolver().insert(
-                movies, values);
-
-        Toast.makeText(getBaseContext(),
-                uri.toString(), Toast.LENGTH_LONG).show();
+        // *** Test with CProvider ***
 
         // Retrieve all movie records
 
@@ -95,5 +94,39 @@ public class MovieDetails extends AppCompatActivity {
         }
 
 
+    }
+
+    private View.OnClickListener addToFavouritesListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImageButton ibv = (ImageButton)v;
+                ibv.setColorFilter(Color.parseColor("#AAFFBB33"));
+
+                if(!movieIsFavourite()) {
+                    addMovieToFavourites();
+                }
+            }
+        };
+    }
+
+    private void addMovieToFavourites() {
+        // Insertion
+        ContentValues values = new ContentValues();
+        values.put(DbManager.MOVIE_ID, movieId);
+        values.put(DbManager.MOVIE_TITLE,
+                bigTitle.getText().toString());
+        values.put(DbManager.MOVIE_VOTE,
+                vote.getText().toString());
+
+        Uri uri = getContentResolver().insert(
+                movies, values);
+
+        Toast.makeText(getBaseContext(),
+                uri.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    private boolean movieIsFavourite() {
+        return false;
     }
 }
