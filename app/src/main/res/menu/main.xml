@@ -17,4 +17,12 @@
             android:title="@string/top_rated"
             app:showAsAction="never"/>
     </group>
+    <group>
+        <item android:title="_________________________" android:orderInCategory="35"></item>
+        <item
+            android:id="@+id/show_favourites"
+            android:orderInCategory="40"
+            android:title="@string/favourites"
+            app:showAsAction="never"/>
+    </group>
 </menu>

@@ -58,14 +58,21 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.no_connection_alert)
     TextView tNoConnection;
 
+    MenuItem menuFavourites;
+
     MenuItem menuPopular;
 
     MenuItem menuTopRated;
+
+    private boolean showFavourites;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        showFavourites=false;
+
         if (savedInstanceState != null) {
             this.Popular = savedInstanceState.getBoolean(ORDER_BY_KEY);
         } else {
@@ -107,8 +114,13 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 this.Popular = false;
             }
-
         }
+
+        if(this.showFavourites) {
+            MovieDbCurrentOption = "315837";
+            return;
+        }
+
 
         if(this.Popular) {
             MovieDbCurrentOption = SettingsAPI.OPTION_POPULAR;
@@ -168,7 +180,11 @@ public class MainActivity extends AppCompatActivity {
             JsonReader reader = new JsonReader(inReader);
 
             try {
-                readMessagesArray(reader);
+                if(showFavourites) {
+                    movieList.add(readTitle(reader));
+                } else {
+                    readMessagesArray(reader);
+                }
             } finally {
                 reader.close();
             }
@@ -271,6 +287,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 menuTopRated.setChecked(true);
+                movieList.clear();
+                try {
+                    internet();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
+
+        menuFavourites = menu.findItem(R.id.show_favourites);
+        menuFavourites.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                showFavourites = true;
                 movieList.clear();
                 try {
                     internet();
