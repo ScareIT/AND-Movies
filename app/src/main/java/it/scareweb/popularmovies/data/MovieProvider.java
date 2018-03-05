@@ -111,7 +111,20 @@ public class MovieProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+        int moviesDeleted = 0;
+
+        switch (sUriMatcher.match(uri)) {
+//            case FAVOURITES:
+//                break;
+            case FAVOURITES_WITH_ID:
+                String idToDelete = uri.getPathSegments().get(1);
+                moviesDeleted = movieDb.delete(DbManager.TABLE_FAVOURITE_MOVIES, DbManager.MOVIE_ID + "=?", new String[]{idToDelete});
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        return moviesDeleted;
     }
 
     @Override

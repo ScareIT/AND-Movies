@@ -100,6 +100,7 @@ public class MovieDetails extends AppCompatActivity {
                     ibv.setColorFilter(getResources().getColor(R.color.favouriteIcon));
                     movieSaved = true;
                 } else {
+                    removeMovieFromFavourites();
                     ibv.clearColorFilter();
                     movieSaved = false;
                 }
@@ -122,6 +123,15 @@ public class MovieDetails extends AppCompatActivity {
 
         Toast.makeText(getBaseContext(),
                 uri.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    private void removeMovieFromFavourites() {
+        // Deletion
+        Uri moviesOne = movies.buildUpon()
+                .appendPath(String.valueOf(movieId)).build();
+
+        getContentResolver().delete(
+                moviesOne, null, null);
     }
 
     private boolean movieIsFavourite() {
