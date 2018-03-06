@@ -4,7 +4,7 @@
 <item
     android:orderInCategory="10"
     android:title="@string/orderby" />
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/menu_orderby" android:checkableBehavior="single">
         <item
             android:id="@+id/orderby_popular"
             android:orderInCategory="20"

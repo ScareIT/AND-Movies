@@ -5,8 +5,11 @@
     <string name="most_popular">Most popular</string>
     <string name="top_rated">Top rated</string>
     <string name="no_connection_alert">No connections are available at the moment, please check your connection status, then try again.</string>
+    <string name="no_favourites_alert">You didn\'t add any movie yet!\n\nYou can go back to movie list, then choosing your favourite movie. If you click on the star, the movie will immediately became your favourite!</string>
     <string name="release_date_label">Release date:</string>
     <string name="rate_label">Vote average:</string>
     <string name="plot">Plot:</string>
     <string name="favourites">Favourites movies</string>
+    <string name="added_to_favourites">added to favourites!</string>
+    <string name="removed_from_favourites">removed from favourites!</string>
 </resources>

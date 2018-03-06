@@ -38,7 +38,6 @@ public class MovieProvider extends ContentProvider {
         return uriMatcher;
     }
 
-
     @Override
     public boolean onCreate() {
         Context context = getContext();

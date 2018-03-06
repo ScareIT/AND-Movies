@@ -2,6 +2,7 @@ package it.scareweb.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,11 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     @Override
     public void onBindViewHolder(MovieListAdapter.MovieListAdapterViewHolder holder, int position) {
         // holder.movieTitle.setText(movies.get(position).getTitle());
+        if(movies.get(position).getMovieRawPicture() != null) {
+            holder.moviePicture.setImageBitmap(BitmapFactory.decodeByteArray( movies.get(position).getMovieRawPicture(),
+                    0, movies.get(position).getMovieRawPicture().length));
+            return;
+        }
         Picasso.with(holder.moviePicture.getContext())
                 .load("http://image.tmdb.org/t/p/w185" + movies.get(position).getPicture())
                 .into(holder.moviePicture);

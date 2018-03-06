@@ -10,7 +10,8 @@ import java.io.Serializable;
 public class Movie implements Serializable {
     private int movieId;
     private String movieTitle;
-    private String moviePicture;
+    private String moviePictureUrl;
+    private byte[] movieRawPicture;
     private String moviePlot;
     private float movieVote;
     private String movieVoteStr;
@@ -20,7 +21,7 @@ public class Movie implements Serializable {
 
     public Movie(String title, String picture) {
         this.movieTitle = title;
-        this.moviePicture = picture;
+        this.moviePictureUrl = picture;
     }
 
     public int getId() {
@@ -32,11 +33,11 @@ public class Movie implements Serializable {
     }
 
     public String getPicture() {
-        return this.moviePicture;
+        return this.moviePictureUrl;
     }
 
     public void setPicture(String pictureUrl) {
-        this.moviePicture = pictureUrl;
+        this.moviePictureUrl = pictureUrl;
     }
 
     public String getTitle() {
@@ -58,5 +59,9 @@ public class Movie implements Serializable {
     public String getMovieReleaseDate() {return this.movieReleaseDate; }
 
     public void setMovieReleaseDate(String releaseDate) { this.movieReleaseDate = releaseDate; }
+
+    public byte[] getMovieRawPicture() {return this.movieRawPicture; }
+
+    public void setMovieRawPicture(byte[] bitmap) { this.movieRawPicture = bitmap; }
 
 }

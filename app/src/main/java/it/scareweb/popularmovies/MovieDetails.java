@@ -56,9 +56,6 @@ public class MovieDetails extends AppCompatActivity {
     @BindView(R.id.details_movie_poster)
     ImageView poster;
 
-    @BindView(R.id.details_movie_poster_clone)
-    ImageView posterClone;
-
     @BindView(R.id.add_to_favourites)
     ImageButton addToFavouritesIcon;
 
@@ -66,9 +63,9 @@ public class MovieDetails extends AppCompatActivity {
 
     private boolean movieSaved;
 
-    Uri movies;
+    private Uri movies;
 
-    Movie selectedMovie;
+    private Movie selectedMovie;
 
     MovieDetails() {
         movieSaved = false;
@@ -88,12 +85,14 @@ public class MovieDetails extends AppCompatActivity {
         plot.setText(selectedMovie.getMoviePlot());
         releaseDate.setText(selectedMovie.getMovieReleaseDate());
         poster.setContentDescription(selectedMovie.getTitle() + " poster");
-//        Picasso.with(this)
-//                .load(SettingsAPI.IMAGE_URL + SettingsAPI.IMAGE_SIZE_NORMAL + selectedMovie.getPicture())
-//                .into(poster);
-                Picasso.with(this)
-                .load(SettingsAPI.IMAGE_URL + SettingsAPI.IMAGE_SIZE_NORMAL + selectedMovie.getPicture())
-                .into(posterClone);
+        if(selectedMovie.getMovieRawPicture() != null) {
+            poster.setImageBitmap(BitmapFactory.decodeByteArray( selectedMovie.getMovieRawPicture(),
+                    0, selectedMovie.getMovieRawPicture().length));
+        } else {
+            Picasso.with(this)
+                    .load(SettingsAPI.IMAGE_URL + SettingsAPI.IMAGE_SIZE_NORMAL + selectedMovie.getPicture())
+                    .into(poster);
+        }
 
         movies = MovieProvider.BASE_CONTENT_URI;
         movies = movies.buildUpon().appendPath(MovieProvider.PATH_FAVOURITES).build();
@@ -138,13 +137,13 @@ public class MovieDetails extends AppCompatActivity {
         values.put(DbManager.MOVIE_VOTE,
                 vote.getText().toString());
 
-        //region Blob experiments
+        //region Movie picture byte array get
 
-        URLConnection ucon = null;
+        URLConnection pictureUrl = null;
         InputStream is = null;
         try {
-            ucon = new URL(SettingsAPI.IMAGE_URL + SettingsAPI.IMAGE_SIZE_NORMAL + selectedMovie.getPicture()).openConnection();
-            is = ucon.getInputStream();
+            pictureUrl = new URL(SettingsAPI.IMAGE_URL + SettingsAPI.IMAGE_SIZE_NORMAL + selectedMovie.getPicture()).openConnection();
+            is = pictureUrl.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -163,21 +162,6 @@ public class MovieDetails extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        poster.setImageBitmap(BitmapFactory.decodeByteArray( buffer.toByteArray(),
-                0, buffer.toByteArray().length));
-
-        Bitmap bitmap = ((BitmapDrawable)poster.getDrawable()).getBitmap();
-        //ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        //bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        //byte[] byteArray = stream.toByteArray();
-        int size = bitmap.getRowBytes() * bitmap.getHeight();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(size);
-        bitmap.copyPixelsToBuffer(byteBuffer);
-        byte[] byteArray1 = byteBuffer.array();
-
-        posterClone.setImageBitmap(BitmapFactory.decodeByteArray( byteArray1,
-                0, byteArray1.length));
-
         values.put(DbManager.MOVIE_POSTER,
                 buffer.toByteArray());
 
@@ -186,8 +170,20 @@ public class MovieDetails extends AppCompatActivity {
         Uri uri = getContentResolver().insert(
                 movies, values);
 
-        Toast.makeText(getBaseContext(),
-                uri.toString(), Toast.LENGTH_LONG).show();
+        if(uri != null) {
+            Toast.makeText(getBaseContext(), selectedMovie.getTitle() + " " + this.getString(R.string.added_to_favourites), Toast.LENGTH_LONG).show();
+        }
+
+        //region Picture from array bytes, experiments
+//        Bitmap bitmap = ((BitmapDrawable)poster.getDrawable()).getBitmap();
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//        byte[] byteArray = stream.toByteArray();
+//        int size = bitmap.getRowBytes() * bitmap.getHeight();
+//        ByteBuffer byteBuffer = ByteBuffer.allocate(size);
+//        bitmap.copyPixelsToBuffer(byteBuffer);
+//        byte[] byteArray1 = byteBuffer.array();
+        //endregion
     }
 
     private void removeMovieFromFavourites() {
@@ -195,8 +191,11 @@ public class MovieDetails extends AppCompatActivity {
         Uri moviesOne = movies.buildUpon()
                 .appendPath(String.valueOf(movieId)).build();
 
-        getContentResolver().delete(
+        int deletions = getContentResolver().delete(
                 moviesOne, null, null);
+        if(deletions > 0) {
+            Toast.makeText(getBaseContext(), selectedMovie.getTitle() + " " + this.getString(R.string.removed_from_favourites), Toast.LENGTH_LONG).show();
+        }
     }
 
     private boolean movieIsFavourite() {

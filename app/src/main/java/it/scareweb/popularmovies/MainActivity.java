@@ -1,6 +1,7 @@
 package it.scareweb.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -14,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.GridLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -28,6 +28,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import it.scareweb.popularmovies.data.MovieProvider;
+import it.scareweb.popularmovies.database.DbManager;
 import it.scareweb.popularmovies.models.Movie;
 import it.scareweb.popularmovies.models.SettingsAPI;
 
@@ -55,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.no_connection_alert)
     TextView tNoConnection;
+
+    @BindView(R.id.no_favourites_alert)
+    TextView tNoFavourites;
 
     MenuItem menuFavourites;
 
@@ -93,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(movieListAdapter);
 
         try {
-            internet();
+            getAllMovies();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -105,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putBoolean(ORDER_BY_KEY, this.Popular);
     }
 
-    private void config() {
+    private boolean config() {
         if(menuPopular != null) {
             if (menuPopular.isChecked()) {
                 this.Popular = true;
@@ -115,37 +120,40 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(this.showFavourites) {
-            MovieDbCurrentOption = "315837";
-            return;
+            return false;
         }
-
 
         if(this.Popular) {
             MovieDbCurrentOption = SettingsAPI.OPTION_POPULAR;
         } else {
             MovieDbCurrentOption = SettingsAPI.OPTION_TOP_RATED;
         }
+        return true;
     }
 
+    private void getAllMovies() throws MalformedURLException {
+        this.tNoFavourites.setVisibility(View.GONE);
+        boolean isInternetRequired = config();
 
+        if(isInternetRequired) {
+            Uri builtUri = Uri.parse(MovieDbUrl + MovieDbCurrentOption)
+                    .buildUpon()
+                    .appendQueryParameter("api_key", SettingsAPI.API_KEY)
+                    .build();
 
-    private void internet() throws MalformedURLException {
-        config();
-        Uri builtUri = Uri.parse(MovieDbUrl + MovieDbCurrentOption)
-                .buildUpon()
-                .appendQueryParameter("api_key", SettingsAPI.API_KEY)
-                .build();
+            URL url = new URL(builtUri.toString());
 
-        URL url = new URL(builtUri.toString());
+            if (!isInternetAvailable()) {
+                tNoConnection.setVisibility(View.VISIBLE);
+                return;
+            }
 
-        if(!isInternetAvailable()) {
-            tNoConnection.setVisibility(View.VISIBLE);
-            return;
+            tIntro.setVisibility(View.VISIBLE);
+
+            new GetMovies().execute(url);
+        } else if (this.showFavourites) {
+            getFavouritesMovies();
         }
-
-        tIntro.setVisibility(View.VISIBLE);
-
-        new GetMovies().execute(url);
     }
 
     private boolean isInternetAvailable() {
@@ -174,15 +182,10 @@ public class MainActivity extends AppCompatActivity {
             InputStream in = urlConnection.getInputStream();
             InputStreamReader inReader = new InputStreamReader(in);
 
-
             JsonReader reader = new JsonReader(inReader);
 
             try {
-                if(showFavourites) {
-                    movieList.add(readTitle(reader));
-                } else {
-                    readMessagesArray(reader);
-                }
+                readMessagesArray(reader);
             } finally {
                 reader.close();
             }
@@ -261,18 +264,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void getFavouritesMovies() {
+        Uri favouriteMovies = MovieProvider.BASE_CONTENT_URI.buildUpon().appendPath(MovieProvider.PATH_FAVOURITES).build();
+
+        Cursor c = getContentResolver().query(favouriteMovies, null, null, null, DbManager.MOVIE_TITLE + " DESC");
+
+        if (c != null && c.moveToFirst()) {
+            do{
+                Movie favMovie = new Movie();
+                favMovie.setId(c.getInt(c.getColumnIndex(DbManager.MOVIE_ID)));
+                favMovie.setTitle(c.getString(c.getColumnIndex(DbManager.MOVIE_TITLE)));
+                favMovie.setPlot(c.getString(c.getColumnIndex(DbManager.MOVIE_SYNOPSIS)));
+                favMovie.setMovieRawPicture(c.getBlob(c.getColumnIndex(DbManager.MOVIE_POSTER)));
+                movieList.add(favMovie);
+            } while (c.moveToNext());
+        } else {
+            this.tNoFavourites.setVisibility(View.VISIBLE);
+        }
+        movieListAdapter.setMovieTitles(movieList);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
+
         menuPopular = menu.findItem(R.id.orderby_popular);
         menuPopular.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 menuPopular.setChecked(true);
                 movieList.clear();
+                showFavourites = false;
                 try {
-                    internet();
+                    getAllMovies();
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
@@ -286,8 +311,9 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 menuTopRated.setChecked(true);
                 movieList.clear();
+                showFavourites = false;
                 try {
-                    internet();
+                    getAllMovies();
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
@@ -302,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
                 showFavourites = true;
                 movieList.clear();
                 try {
-                    internet();
+                    getAllMovies();
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
