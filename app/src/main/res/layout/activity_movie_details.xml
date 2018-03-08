@@ -112,7 +112,47 @@
         app:layout_constraintTop_toTopOf="@+id/details_big_title"
         app:srcCompat="@android:drawable/btn_star"
         />
+
+    <TextView
+        android:id="@+id/details_trailers_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/details_trailers_label"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/details_movie_plot"
+        app:layout_constraintTop_toBottomOf="@+id/details_movie_plot" />
+
+    <TextView
+        android:id="@+id/details_trailers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@+id/details_trailers_label"
+        app:layout_constraintTop_toBottomOf="@+id/details_trailers_label"
+        tools:text="Trailer list\nAnother trailer" />
+
+    <TextView
+        android:id="@+id/details_reviews_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/details_trailers"
+        app:layout_constraintTop_toBottomOf="@+id/details_trailers" />
+
+    <TextView
+        android:id="@+id/details_reviews"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@+id/details_reviews_label"
+        app:layout_constraintTop_toBottomOf="@+id/details_reviews_label"
+        tools:text="Review 1... Review2..." />
 </android.support.constraint.ConstraintLayout>
+
+
 
 
 </ScrollView>

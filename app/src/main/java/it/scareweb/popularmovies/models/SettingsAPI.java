@@ -18,4 +18,8 @@ public class SettingsAPI {
     public static final String OPTION_TOP_RATED = "top_rated";
 
     public static final String API_KEY = BuildConfig.API_V3_KEY;
+
+    public static final String TRAILERS = "/trailers";
+
+    public static final String REVIEWS = "/reviews";
 }

@@ -12,4 +12,5 @@
     <string name="favourites">Favourites movies</string>
     <string name="added_to_favourites">added to favourites!</string>
     <string name="removed_from_favourites">removed from favourites!</string>
+    <string name="details_trailers_label">Movie trailers:</string>
 </resources>

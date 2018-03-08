@@ -59,6 +59,12 @@ public class MovieDetails extends AppCompatActivity {
     @BindView(R.id.add_to_favourites)
     ImageButton addToFavouritesIcon;
 
+    @BindView(R.id.details_trailers)
+    TextView trailerList;
+
+    @BindView(R.id.details_reviews)
+    TextView reviewLists;
+
     private int movieId;
 
     private boolean movieSaved;
@@ -70,6 +76,9 @@ public class MovieDetails extends AppCompatActivity {
     MovieDetails() {
         movieSaved = false;
     }
+
+    MovieDetailsExtra detailsExtra;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +107,9 @@ public class MovieDetails extends AppCompatActivity {
         movies = movies.buildUpon().appendPath(MovieProvider.PATH_FAVOURITES).build();
 
         setupAddToFavouritesIcon();
+
+        detailsExtra = new MovieDetailsExtra();
+        detailsExtra.FillTrailers(selectedMovie.getId(),trailerList, reviewLists);
     }
 
     private void setupAddToFavouritesIcon() {

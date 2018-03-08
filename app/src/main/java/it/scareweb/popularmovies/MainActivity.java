@@ -2,8 +2,6 @@ package it.scareweb.popularmovies;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -11,11 +9,14 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.JsonReader;
+import android.util.JsonToken;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +33,7 @@ import it.scareweb.popularmovies.data.MovieProvider;
 import it.scareweb.popularmovies.database.DbManager;
 import it.scareweb.popularmovies.models.Movie;
 import it.scareweb.popularmovies.models.SettingsAPI;
+import it.scareweb.popularmovies.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -89,13 +91,42 @@ public class MainActivity extends AppCompatActivity {
         movieList = new ArrayList<>();
         movieListAdapter = new MovieListAdapter();
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        final GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         layoutManager.setOrientation(GridLayoutManager.VERTICAL);
         layoutManager.setReverseLayout(false);
 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(movieListAdapter);
+
+
+
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            boolean loading = true;
+            int pastVisiblesItems, visibleItemCount, totalItemCount;
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                if(dy > 0) //check for scroll down
+                {
+                    visibleItemCount = layoutManager.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+
+                    if (loading)
+                    {
+                        if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
+                        {
+                            loading = false;
+
+                        }
+                    }
+                }
+            }
+        });
 
         try {
             getAllMovies();
@@ -141,36 +172,31 @@ public class MainActivity extends AppCompatActivity {
                     .appendQueryParameter("api_key", SettingsAPI.API_KEY)
                     .build();
 
-            URL url = new URL(builtUri.toString());
-
-            if (!isInternetAvailable()) {
+            if (!NetworkUtils.isInternetAvailable(this)) {
                 tNoConnection.setVisibility(View.VISIBLE);
                 return;
             }
 
             tIntro.setVisibility(View.VISIBLE);
 
-            new GetMovies().execute(url);
+            new GetMovies().execute(builtUri);
         } else if (this.showFavourites) {
             getFavouritesMovies();
         }
     }
 
-    private boolean isInternetAvailable() {
-        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+    private class GetMovies extends AsyncTask<Uri, String, Void> {
 
-        if(networkInfo != null && networkInfo.isConnectedOrConnecting()) {
-            return true;
+        private int page;
+
+        GetMovies() {
         }
 
-        return false;
-    }
-
-    private class GetMovies extends AsyncTask<URL, String, Void> {
+        GetMovies(int page) {
+            this.page = page;
+        }
 
         public void internet(URL url) throws IOException {
-
             HttpURLConnection urlConnection = null;
             try {
                 urlConnection = (HttpURLConnection) url
@@ -224,20 +250,25 @@ public class MainActivity extends AppCompatActivity {
 
             while (reader.hasNext()) {
                 String name = reader.nextName();
+                if(reader.peek()== JsonToken.NULL) {
+                    reader.skipValue();
+                    continue;
+                }
+
                 if (name.equals("title")) {
                     movie.setTitle(reader.nextString());
                 } else if (name.equals("id")) {
                     movie.setId(reader.nextInt());
                 } else if (name.equals("poster_path")) {
-                    movie.setPicture(reader.nextString());
+                    String poster = reader.nextString();
+                    movie.setPicture(poster);
                 } else if (name.equals("vote_average")) {
                     movie.setVote(reader.nextString());
                 } else if (name.equals("overview")) {
                     movie.setPlot(reader.nextString());
                 } else if (name.equals("release_date")) {
                     movie.setMovieReleaseDate(reader.nextString());
-                }
-                else {
+                } else {
                     reader.skipValue();
                 }
             }
@@ -247,9 +278,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(URL... urls) {
+        protected Void doInBackground(Uri... uris) {
+
+            URL url = null;
+
             try {
-                internet(urls[0]);
+                if(this.page > 1) {
+                    uris[0] = uris[0].buildUpon().appendQueryParameter("page", Integer.toString(this.page));
+                }
+                url = new URL(uris[0].toString());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+
+            try {
+                internet(url);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -259,7 +303,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            //setTitles();
             movieListAdapter.setMovieTitles(movieList);
         }
     }
