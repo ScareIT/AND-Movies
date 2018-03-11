@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
     MenuItem menuTopRated;
 
+    private int queryPage=1;
+
     private boolean showFavourites;
 
 
@@ -100,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(movieListAdapter);
 
 
-
-
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             boolean loading = true;
@@ -121,18 +121,16 @@ public class MainActivity extends AppCompatActivity {
                         if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
                         {
                             loading = false;
-
+                            queryPage++;
+                            getAllMovies(queryPage);
+                            loading = true;
                         }
                     }
                 }
             }
         });
 
-        try {
-            getAllMovies();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        getAllMovies();
     }
 
     @Override
@@ -162,7 +160,11 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void getAllMovies() throws MalformedURLException {
+    private void getAllMovies() {
+        getAllMovies(1);
+    }
+
+    private void getAllMovies(int page) {
         this.tNoFavourites.setVisibility(View.GONE);
         boolean isInternetRequired = config();
 
@@ -179,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
             tIntro.setVisibility(View.VISIBLE);
 
-            new GetMovies().execute(builtUri);
+            new GetMovies(page).execute(builtUri);
         } else if (this.showFavourites) {
             getFavouritesMovies();
         }
@@ -284,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 if(this.page > 1) {
-                    uris[0] = uris[0].buildUpon().appendQueryParameter("page", Integer.toString(this.page));
+                    uris[0] = uris[0].buildUpon().appendQueryParameter("page", Integer.toString(this.page)).build();
                 }
                 url = new URL(uris[0].toString());
             } catch (MalformedURLException e) {
@@ -339,11 +341,7 @@ public class MainActivity extends AppCompatActivity {
                 menuPopular.setChecked(true);
                 movieList.clear();
                 showFavourites = false;
-                try {
-                    getAllMovies();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+                getAllMovies();
                 return false;
             }
         });
@@ -355,11 +353,7 @@ public class MainActivity extends AppCompatActivity {
                 menuTopRated.setChecked(true);
                 movieList.clear();
                 showFavourites = false;
-                try {
-                    getAllMovies();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+                getAllMovies();
                 return false;
             }
         });
@@ -370,11 +364,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 showFavourites = true;
                 movieList.clear();
-                try {
-                    getAllMovies();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+                getAllMovies();
                 return false;
             }
         });
