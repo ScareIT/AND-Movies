@@ -1,15 +1,20 @@
 package it.scareweb.popularmovies;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,15 +26,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import it.scareweb.popularmovies.data.MovieProvider;
 import it.scareweb.popularmovies.database.DbManager;
 import it.scareweb.popularmovies.models.Movie;
+import it.scareweb.popularmovies.models.MovieTrailer;
 import it.scareweb.popularmovies.models.SettingsAPI;
 
-public class MovieDetails extends AppCompatActivity {
+public class MovieDetails extends AppCompatActivity implements MovieDetailsExtra.OnTaskCompleted {
     Intent intent;
 
     @BindView(R.id.details_big_title)
@@ -50,17 +58,19 @@ public class MovieDetails extends AppCompatActivity {
     @BindView(R.id.add_to_favourites)
     ImageButton addToFavouritesIcon;
 
-    @BindView(R.id.details_trailers)
-    TextView trailerList;
-
     @BindView(R.id.details_reviews)
     TextView reviewLists;
+
+    @BindView(R.id.details_trailers)
+    ListView advancedTrailerList;
 
     private int movieId;
 
     private boolean movieSaved;
 
     private Uri movies;
+
+    private List<MovieTrailer> trailerList;
 
     private Movie selectedMovie;
 
@@ -71,6 +81,8 @@ public class MovieDetails extends AppCompatActivity {
     MovieDetailsExtra detailsExtra;
 
     private byte[] movieRawPicture;
+
+    private CustomMovieAdapter adapter;
 
 
     @Override
@@ -102,8 +114,8 @@ public class MovieDetails extends AppCompatActivity {
 
         setupAddToFavouritesIcon();
 
-        detailsExtra = new MovieDetailsExtra();
-        detailsExtra.FillTrailers(selectedMovie.getId(),trailerList, reviewLists);
+        detailsExtra = new MovieDetailsExtra(this);
+        detailsExtra.FillTrailers(selectedMovie.getId(), reviewLists);
     }
 
     private void setupAddToFavouritesIcon() {
@@ -167,7 +179,6 @@ public class MovieDetails extends AppCompatActivity {
             }
         }
 
-
         values.put(DbManager.MOVIE_ID, movieId);
         values.put(DbManager.MOVIE_TITLE,
                 bigTitle.getText().toString());
@@ -224,5 +235,94 @@ public class MovieDetails extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    @Override
+    public void onTaskCompleted(List<MovieTrailer> movieTrailers) {
+        this.trailerList = movieTrailers;
+
+        adapter = new CustomMovieAdapter(this, trailerList);
+        advancedTrailerList.setAdapter(adapter);
+
+        //region Non scrollable trailer list
+        /*
+        Got this idea from https://stackoverflow.com/questions/4338185/how-to-get-a-non-scrollable-listview
+        was the most simple way I found to add the trailer list inside the constraint layout and making them immediately
+        visible
+         */
+
+        ViewGroup vg = advancedTrailerList;
+        int totalHeight = 0;
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View listItem = adapter.getView(i, null, vg);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams par = advancedTrailerList.getLayoutParams();
+        par.height = totalHeight + (advancedTrailerList.getDividerHeight() * (adapter.getCount() - 1));
+        //advancedTrailerList.setLayoutParams(par);
+        //advancedTrailerList.requestLayout();
+        //endregion
+    }
+
+
+    class CustomMovieAdapter extends BaseAdapter {
+        private Context context;
+        List<MovieTrailer> data;
+
+        public CustomMovieAdapter(Context context, List data){
+            this.context = context;
+            this.data = data;
+        }
+
+        @Override
+        public int getCount() {
+            return data.size();
+        }
+
+        @Override
+        public MovieTrailer getItem(int i) {
+            return data.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(final int i, View view, ViewGroup viewGroup) {
+            ViewHolder holder;
+            if(view == null) {
+                holder =new ViewHolder();
+                view = LayoutInflater.from(context).inflate(R.layout.list_item, null);
+                holder.imgIcon = view.findViewById(R.id.imgIcon);
+                holder.linkDescription = view.findViewById(R.id.trailerLink);
+                view.setTag(holder);
+
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(getItem(i).Link()));
+                        startActivity(intent);
+                    }
+                });
+
+
+            } else {
+                holder = (ViewHolder)view.getTag();
+            }
+
+            holder.linkDescription.setText(getItem(i).Name);
+
+            return view;
+        }
+
+        class ViewHolder{
+            ImageView imgIcon;
+            TextView linkDescription;
+        }
     }
 }

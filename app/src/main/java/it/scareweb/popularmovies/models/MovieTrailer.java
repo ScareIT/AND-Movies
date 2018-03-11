@@ -10,4 +10,7 @@ public class MovieTrailer {
     public String Source;
     public String Type;
 
+    public String Link() {
+        return "http://www.youtube.com/watch?v=" + Source;
+    }
 }

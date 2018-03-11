@@ -7,7 +7,8 @@
 <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.scareweb.popularmovies.MovieDetails">
+    tools:context="it.scareweb.popularmovies.MovieDetails"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/details_big_title"
@@ -123,14 +124,14 @@
         app:layout_constraintStart_toStartOf="@+id/details_movie_plot"
         app:layout_constraintTop_toBottomOf="@+id/details_movie_plot" />
 
-    <TextView
+    <ListView
         android:id="@+id/details_trailers"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="@+id/details_trailers_label"
         app:layout_constraintTop_toBottomOf="@+id/details_trailers_label"
-        tools:text="Trailer list\nAnother trailer" />
+        />
 
     <TextView
         android:id="@+id/details_reviews_label"
@@ -150,9 +151,6 @@
         app:layout_constraintStart_toStartOf="@+id/details_reviews_label"
         app:layout_constraintTop_toBottomOf="@+id/details_reviews_label"
         tools:text="Review 1... Review2..." />
+
 </android.support.constraint.ConstraintLayout>
-
-
-
-
 </ScrollView>

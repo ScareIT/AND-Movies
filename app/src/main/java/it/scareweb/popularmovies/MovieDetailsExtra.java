@@ -1,7 +1,10 @@
 package it.scareweb.popularmovies;
 
+import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.widget.TextView;
@@ -26,13 +29,25 @@ import it.scareweb.popularmovies.utils.NetworkUtils;
 
 public class MovieDetailsExtra {
 
+    private OnTaskCompleted listener;
+
+    public interface OnTaskCompleted{
+        void onTaskCompleted(List<MovieTrailer> movieTrailers);
+    }
+
     private List<MovieTrailer> trailers = new ArrayList<>();
     private List<MovieReview> reviews = new ArrayList<>();
 
     private TextView TrailerListView;
     private TextView ReviewListView;
 
-    public void FillTrailers(int id, TextView trailerList, TextView reviewList) {
+    MovieDetailsExtra() {}
+
+    MovieDetailsExtra(Context context) {
+        listener = (OnTaskCompleted) context;
+    }
+
+    public void FillTrailers(int id, TextView reviewList) {
 
         URL urlTrailers = null;
         URL urlReviews = null;
@@ -54,11 +69,10 @@ public class MovieDetailsExtra {
             e.printStackTrace();
         }
 
-        if (!NetworkUtils.isInternetAvailable(trailerList.getContext())) {
+        if (!NetworkUtils.isInternetAvailable(reviewList.getContext())) {
             return;
         }
 
-        TrailerListView = trailerList;
         ReviewListView = reviewList;
         new GetMovies().execute(urlTrailers, urlReviews);
     }
@@ -92,7 +106,10 @@ public class MovieDetailsExtra {
             reader.beginObject();
             while (reader.hasNext()) {
                 String name = reader.nextName();
-                if (name.equals("youtube")|| name.equals("quicktime")) {
+                if (name.equals("youtube")
+                        // || name.equals("quicktime"))
+                        // Quicktime not managed yet...
+                    ){
                     readTrailers(reader);
                 } else if (name.equals("results")) {
                     readReviews(reader);
@@ -189,10 +206,9 @@ public class MovieDetailsExtra {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            for (MovieTrailer trailer :
-                 trailers) {
-                TrailerListView.append(trailer.Name + "\n");
-            }
+
+            if(listener!=null)
+            listener.onTaskCompleted(trailers);
 
             for (MovieReview review :
                     reviews) {
