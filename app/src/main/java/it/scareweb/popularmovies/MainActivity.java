@@ -16,8 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -319,7 +317,9 @@ public class MainActivity extends AppCompatActivity {
                 Movie favMovie = new Movie();
                 favMovie.setId(c.getInt(c.getColumnIndex(DbManager.MOVIE_ID)));
                 favMovie.setTitle(c.getString(c.getColumnIndex(DbManager.MOVIE_TITLE)));
-                favMovie.setPlot(c.getString(c.getColumnIndex(DbManager.MOVIE_SYNOPSIS)));
+                favMovie.setPlot(c.getString(c.getColumnIndex(DbManager.MOVIE_PLOT)));
+                favMovie.setVote(c.getString(c.getColumnIndex(DbManager.MOVIE_VOTE)));
+                favMovie.setMovieReleaseDate(c.getString(c.getColumnIndex(DbManager.MOVIE_RELEASE_DATE)));
                 favMovie.setMovieRawPicture(c.getBlob(c.getColumnIndex(DbManager.MOVIE_POSTER)));
                 movieList.add(favMovie);
             } while (c.moveToNext());

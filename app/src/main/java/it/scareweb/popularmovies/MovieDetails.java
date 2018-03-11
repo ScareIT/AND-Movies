@@ -2,18 +2,11 @@ package it.scareweb.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,12 +17,10 @@ import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.ByteBuffer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,6 +70,8 @@ public class MovieDetails extends AppCompatActivity {
 
     MovieDetailsExtra detailsExtra;
 
+    private byte[] movieRawPicture;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +88,8 @@ public class MovieDetails extends AppCompatActivity {
         releaseDate.setText(selectedMovie.getMovieReleaseDate());
         poster.setContentDescription(selectedMovie.getTitle() + " poster");
         if(selectedMovie.getMovieRawPicture() != null) {
-            poster.setImageBitmap(BitmapFactory.decodeByteArray( selectedMovie.getMovieRawPicture(),
+            this.movieRawPicture = selectedMovie.getMovieRawPicture();
+            poster.setImageBitmap(BitmapFactory.decodeByteArray( this.movieRawPicture,
                     0, selectedMovie.getMovieRawPicture().length));
         } else {
             Picasso.with(this)
@@ -143,39 +137,48 @@ public class MovieDetails extends AppCompatActivity {
     private void addMovieToFavourites() {
         // Insertion
         ContentValues values = new ContentValues();
-        values.put(DbManager.MOVIE_ID, movieId);
-        values.put(DbManager.MOVIE_TITLE,
-                bigTitle.getText().toString());
-        values.put(DbManager.MOVIE_VOTE,
-                vote.getText().toString());
 
         //region Movie picture byte array get
 
         URLConnection pictureUrl = null;
         InputStream is = null;
-        try {
-            pictureUrl = new URL(SettingsAPI.IMAGE_URL + SettingsAPI.IMAGE_SIZE_NORMAL + selectedMovie.getPicture()).openConnection();
-            is = pictureUrl.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        BufferedInputStream bis = new BufferedInputStream(is);
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-        byte[] data = new byte[50];
-        int current = 0;
-
-        try {
-            while((current = bis.read(data,0,data.length)) != -1){
-                buffer.write(data,0,current);
+        if(this.movieRawPicture == null && selectedMovie.getPicture() != null) {
+            try {
+                pictureUrl = new URL(SettingsAPI.IMAGE_URL + SettingsAPI.IMAGE_SIZE_NORMAL + selectedMovie.getPicture()).openConnection();
+                is = pictureUrl.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            BufferedInputStream bis = new BufferedInputStream(is);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            byte[] data = new byte[50];
+            int current = 0;
+
+            try {
+                while((current = bis.read(data,0,data.length)) != -1){
+                    buffer.write(data,0,current);
+                }
+                this.movieRawPicture = buffer.toByteArray();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
+
+        values.put(DbManager.MOVIE_ID, movieId);
+        values.put(DbManager.MOVIE_TITLE,
+                bigTitle.getText().toString());
+        values.put(DbManager.MOVIE_VOTE,
+                vote.getText().toString());
+        values.put(DbManager.MOVIE_RELEASE_DATE,
+                releaseDate.getText().toString());
+        values.put(DbManager.MOVIE_PLOT,
+                plot.getText().toString());
         values.put(DbManager.MOVIE_POSTER,
-                buffer.toByteArray());
+                this.movieRawPicture);
 
         //endregion
 

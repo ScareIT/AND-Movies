@@ -17,12 +17,12 @@ public class DbManager extends SQLiteOpenHelper {
     public static final String MOVIE_ID = "_id";
     public static final String MOVIE_TITLE = "movieTitle";
     public static final String MOVIE_POSTER = "moviePoster";
-    public static final String MOVIE_SYNOPSIS = "movieSynopsis";
+    public static final String MOVIE_PLOT = "movieSynopsis";
     public static final String MOVIE_VOTE = "movieVote";
     public static final String MOVIE_RELEASE_DATE = "movieRelDate";
 
     public static final String[] ALL_COLUMNS =
-            {MOVIE_ID,MOVIE_POSTER,MOVIE_SYNOPSIS,MOVIE_VOTE,MOVIE_RELEASE_DATE};
+            {MOVIE_ID,MOVIE_POSTER, MOVIE_PLOT,MOVIE_VOTE,MOVIE_RELEASE_DATE};
 
     public DbManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,7 +35,7 @@ public class DbManager extends SQLiteOpenHelper {
                         MOVIE_ID + " INTEGER PRIMARY KEY, " +
                         MOVIE_TITLE + " TEXT, " +
                         MOVIE_POSTER + " BLOB, " +
-                        MOVIE_SYNOPSIS + " TEXT, " +
+                        MOVIE_PLOT + " TEXT, " +
                         MOVIE_RELEASE_DATE + " TEXT default CURRENT_TIMESTAMP, " +
                         MOVIE_VOTE + " REAL " +
                         ")";
