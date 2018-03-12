@@ -1,7 +1,6 @@
 package it.scareweb.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,8 +21,17 @@ import it.scareweb.popularmovies.models.Movie;
  */
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieListAdapterViewHolder> {
+
+    public interface OnItemClickListener {
+        void onItemClick(Movie item);
+    }
+
     private List<Movie> movies;
-    public MovieListAdapter() {}
+    OnItemClickListener listener;
+
+    public MovieListAdapter(Context context) {
+        listener = (OnItemClickListener) context;
+    }
 
 
     // viewType: progressivo vista creata adesso
@@ -79,9 +87,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
         @Override
         public void onClick(View view) {
             int selectedMovie = getAdapterPosition();
-            Intent intent = new Intent(this.context, MovieDetails.class);
-            intent.putExtra("MOVIE", movies.get(selectedMovie));
-            this.context.startActivity(intent);
+            listener.onItemClick(movies.get(selectedMovie));
         }
     }
 }

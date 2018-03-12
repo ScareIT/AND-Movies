@@ -1,6 +1,7 @@
 package it.scareweb.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -33,7 +34,7 @@ import it.scareweb.popularmovies.models.Movie;
 import it.scareweb.popularmovies.models.SettingsAPI;
 import it.scareweb.popularmovies.utils.NetworkUtils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieListAdapter.OnItemClickListener{
 
     private static final String MovieDbUrl = SettingsAPI.BASE_URL;
 
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
         movieList = new ArrayList<>();
-        movieListAdapter = new MovieListAdapter();
+        movieListAdapter = new MovieListAdapter(this);
 
         final GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         layoutManager.setOrientation(GridLayoutManager.VERTICAL);
@@ -193,6 +194,13 @@ public class MainActivity extends AppCompatActivity {
             tNoConnectionAddOn.setVisibility(View.GONE);
             getFavouritesMovies();
         }
+    }
+
+    @Override
+    public void onItemClick(Movie item) {
+        Intent intent = new Intent(this.context, MovieDetails.class);
+        intent.putExtra("MOVIE", item);
+        this.context.startActivity(intent);
     }
 
     private class GetMovies extends AsyncTask<Uri, String, Void> {
