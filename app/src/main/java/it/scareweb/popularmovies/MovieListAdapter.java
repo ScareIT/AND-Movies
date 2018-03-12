@@ -33,7 +33,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
         listener = (OnItemClickListener) context;
     }
 
-
     // viewType: progressivo vista creata adesso
     @Override
     public MovieListAdapter.MovieListAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

@@ -98,7 +98,7 @@ public class MovieDetails extends AppCompatActivity implements MovieDetailsExtra
         ButterKnife.bind(this);
 
         intent = getIntent();
-        selectedMovie = (Movie)intent.getSerializableExtra("MOVIE");
+        selectedMovie = intent.getParcelableExtra("MOVIE");
         movieId = selectedMovie.getId();
         bigTitle.setText(selectedMovie.getTitle());
         vote.setText(selectedMovie.getMovieVote());
@@ -205,17 +205,6 @@ public class MovieDetails extends AppCompatActivity implements MovieDetailsExtra
         if(uri != null) {
             Toast.makeText(getBaseContext(), selectedMovie.getTitle() + " " + this.getString(R.string.added_to_favourites), Toast.LENGTH_LONG).show();
         }
-
-        //region Picture from array bytes, experiments
-//        Bitmap bitmap = ((BitmapDrawable)poster.getDrawable()).getBitmap();
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//        byte[] byteArray = stream.toByteArray();
-//        int size = bitmap.getRowBytes() * bitmap.getHeight();
-//        ByteBuffer byteBuffer = ByteBuffer.allocate(size);
-//        bitmap.copyPixelsToBuffer(byteBuffer);
-//        byte[] byteArray1 = byteBuffer.array();
-        //endregion
     }
 
     private void removeMovieFromFavourites() {

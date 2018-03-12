@@ -1,13 +1,13 @@
 package it.scareweb.popularmovies.models;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by luca on 19/02/2018.
  */
 
-                            // "Serializable" allows to pass the object as extra in an Intent
-public class Movie implements Serializable {
+public class Movie implements Parcelable {
     private int movieId;
     private String movieTitle;
     private String moviePictureUrl;
@@ -22,6 +22,21 @@ public class Movie implements Serializable {
     public Movie(String title, String picture) {
         this.movieTitle = title;
         this.moviePictureUrl = picture;
+    }
+
+    public Movie(Parcel in) {
+        this.movieId = in.readInt();
+        this.movieTitle = in.readString();
+        this.moviePictureUrl = in.readString();
+        int _byte = in.readInt();
+        if(_byte > 0) {
+            this.movieRawPicture = new byte[_byte];
+            in.readByteArray(this.movieRawPicture);
+        }
+
+        this.moviePlot = in.readString();
+        this.movieVoteStr = in.readString();
+        this.movieReleaseDate = in.readString();
     }
 
     public int getId() {
@@ -64,4 +79,38 @@ public class Movie implements Serializable {
 
     public void setMovieRawPicture(byte[] bitmap) { this.movieRawPicture = bitmap; }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(movieId);
+        parcel.writeString(movieTitle);
+        parcel.writeString(moviePictureUrl);
+        if(this.movieRawPicture != null) {
+            int _byte = this.movieRawPicture.length;
+            parcel.writeInt(_byte);
+            parcel.writeByteArray(this.movieRawPicture);
+        } else {
+            parcel.writeInt(0);
+        }
+
+        parcel.writeString(moviePlot);
+        parcel.writeString(movieVoteStr);
+        parcel.writeString(movieReleaseDate);
+    }
+
+    static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

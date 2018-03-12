@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\Users\luca\Desktop\Codice\Corso_Android\Nanodegree-Githubs\Movies\Android-AND-Movies.iml" filepath="C:\Users\luca\Desktop\Codice\Corso_Android\Nanodegree-Githubs\Movies\Android-AND-Movies.iml" />
       <module fileurl="file://$PROJECT_DIR$/Movies.iml" filepath="$PROJECT_DIR$/Movies.iml" />
-      <module fileurl="file://C:\Users\luccar\Desktop\Progetti (Prova)\Android-AND-Movies\Movies.iml" filepath="C:\Users\luccar\Desktop\Progetti (Prova)\Android-AND-Movies\Movies.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
