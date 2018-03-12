@@ -13,4 +13,7 @@
     <string name="added_to_favourites">added to favourites!</string>
     <string name="removed_from_favourites">removed from favourites!</string>
     <string name="details_trailers_label">Movie trailers:</string>
+    <string name="reviews_label">Reviews:</string>
+    <string name="review_by">Review by</string>
+    <string name="full_review">Full review available here</string>
 </resources>

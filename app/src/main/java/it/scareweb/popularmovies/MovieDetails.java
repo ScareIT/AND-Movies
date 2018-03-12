@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -34,6 +33,7 @@ import butterknife.ButterKnife;
 import it.scareweb.popularmovies.data.MovieProvider;
 import it.scareweb.popularmovies.database.DbManager;
 import it.scareweb.popularmovies.models.Movie;
+import it.scareweb.popularmovies.models.MovieReview;
 import it.scareweb.popularmovies.models.MovieTrailer;
 import it.scareweb.popularmovies.models.SettingsAPI;
 
@@ -62,7 +62,13 @@ public class MovieDetails extends AppCompatActivity implements MovieDetailsExtra
     TextView reviewLists;
 
     @BindView(R.id.details_trailers)
-    ListView advancedTrailerList;
+    ListView trailerListView;
+
+    @BindView(R.id.details_trailers_label)
+    TextView trailersLabel;
+
+    @BindView(R.id.details_reviews_label)
+    TextView reviewsLabel;
 
     private int movieId;
 
@@ -115,7 +121,7 @@ public class MovieDetails extends AppCompatActivity implements MovieDetailsExtra
         setupAddToFavouritesIcon();
 
         detailsExtra = new MovieDetailsExtra(this);
-        detailsExtra.FillTrailers(selectedMovie.getId(), reviewLists);
+        detailsExtra.FillTrailers(selectedMovie.getId());
     }
 
     private void setupAddToFavouritesIcon() {
@@ -238,32 +244,53 @@ public class MovieDetails extends AppCompatActivity implements MovieDetailsExtra
     }
 
     @Override
-    public void onTaskCompleted(List<MovieTrailer> movieTrailers) {
-        this.trailerList = movieTrailers;
+    public void onTaskCompleted(List<MovieTrailer> movieTrailers, List<MovieReview> movieReviews) {
+        if(movieTrailers!= null && movieTrailers.size() > 0) {
 
-        adapter = new CustomMovieAdapter(this, trailerList);
-        advancedTrailerList.setAdapter(adapter);
+            this.trailerList = movieTrailers;
+            trailersLabel.setVisibility(View.VISIBLE);
 
-        //region Non scrollable trailer list
+            adapter = new CustomMovieAdapter(this, trailerList);
+            trailerListView.setAdapter(adapter);
+
+            //region Non scrollable trailer list
         /*
         Got this idea from https://stackoverflow.com/questions/4338185/how-to-get-a-non-scrollable-listview
         was the most simple way I found to add the trailer list inside the constraint layout and making them immediately
         visible
          */
 
-        ViewGroup vg = advancedTrailerList;
-        int totalHeight = 0;
-        for (int i = 0; i < adapter.getCount(); i++) {
-            View listItem = adapter.getView(i, null, vg);
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
+            ViewGroup vg = trailerListView;
+            int totalHeight = 0;
+            for (int i = 0; i < adapter.getCount(); i++) {
+                View listItem = adapter.getView(i, null, vg);
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+
+            ViewGroup.LayoutParams par = trailerListView.getLayoutParams();
+            par.height = totalHeight + (trailerListView.getDividerHeight() * (adapter.getCount() - 1));
+            //trailerListView.setLayoutParams(par);
+            //trailerListView.requestLayout();
+            //endregion
         }
 
-        ViewGroup.LayoutParams par = advancedTrailerList.getLayoutParams();
-        par.height = totalHeight + (advancedTrailerList.getDividerHeight() * (adapter.getCount() - 1));
-        //advancedTrailerList.setLayoutParams(par);
-        //advancedTrailerList.requestLayout();
-        //endregion
+        if(movieReviews != null && movieReviews.size() > 0) {
+            reviewsLabel.setVisibility(View.VISIBLE);
+            String revContent;
+            final int truncSize = 100;
+            for (MovieReview review :
+                    movieReviews) {
+                revContent = review.Content;
+                if(revContent.length() > truncSize) {
+                    revContent = revContent.substring(0, truncSize)+"...";
+                }
+                reviewLists.append(getResources().getString(R.string.review_by) +
+                        ": " + review.Author + "\n" +
+                        revContent + "\n" +
+                        getResources().getString(R.string.full_review) + ": " + review.Url + "\n\n");
+            }
+        }
     }
 
 

@@ -5,7 +5,7 @@ package it.scareweb.popularmovies.models;
  */
 
 public class MovieReview {
-    public String Id;
     public String Author;
     public String Content;
+    public String Url;
 }

@@ -1,13 +1,10 @@
 package it.scareweb.popularmovies;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.util.JsonReader;
 import android.util.JsonToken;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,22 +29,17 @@ public class MovieDetailsExtra {
     private OnTaskCompleted listener;
 
     public interface OnTaskCompleted{
-        void onTaskCompleted(List<MovieTrailer> movieTrailers);
+        void onTaskCompleted(List<MovieTrailer> movieTrailers, List<MovieReview> movieReviews);
     }
 
     private List<MovieTrailer> trailers = new ArrayList<>();
     private List<MovieReview> reviews = new ArrayList<>();
 
-    private TextView TrailerListView;
-    private TextView ReviewListView;
-
-    MovieDetailsExtra() {}
-
     MovieDetailsExtra(Context context) {
         listener = (OnTaskCompleted) context;
     }
 
-    public void FillTrailers(int id, TextView reviewList) {
+    public void FillTrailers(int id) {
 
         URL urlTrailers = null;
         URL urlReviews = null;
@@ -69,11 +61,10 @@ public class MovieDetailsExtra {
             e.printStackTrace();
         }
 
-        if (!NetworkUtils.isInternetAvailable(reviewList.getContext())) {
+        if (!NetworkUtils.isInternetAvailable((Context)this.listener)) {
             return;
         }
 
-        ReviewListView = reviewList;
         new GetMovies().execute(urlTrailers, urlReviews);
     }
 
@@ -183,7 +174,12 @@ public class MovieDetailsExtra {
 
                 if (name.equals("author")) {
                      review.Author = reader.nextString();
-                } else {
+                } else if (name.equals("content")) {
+                    review.Content = reader.nextString();
+                } else if (name.equals("url")) {
+                    review.Url = reader.nextString();
+                }
+                else {
                     reader.skipValue();
                 }
             }
@@ -207,12 +203,8 @@ public class MovieDetailsExtra {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            if(listener!=null)
-            listener.onTaskCompleted(trailers);
-
-            for (MovieReview review :
-                    reviews) {
-                ReviewListView.append(review.Author + "\n");
+            if(listener!=null) {
+                listener.onTaskCompleted(trailers, reviews);
             }
         }
     }
