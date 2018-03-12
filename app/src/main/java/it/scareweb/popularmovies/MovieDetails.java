@@ -322,11 +322,23 @@ public class MovieDetails extends AppCompatActivity implements MovieDetailsExtra
         public View getView(final int i, View view, ViewGroup viewGroup) {
             ViewHolder holder;
             if(view == null) {
-                holder =new ViewHolder();
                 view = LayoutInflater.from(context).inflate(R.layout.list_item, null);
-                holder.imgIcon = view.findViewById(R.id.imgIcon);
-                holder.linkDescription = view.findViewById(R.id.trailerLink);
+                holder = new ViewHolder(view);
                 view.setTag(holder);
+
+                if(i == 0) {
+                    holder.imgShare.setVisibility(View.VISIBLE);
+                    holder.imgShare.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(Intent.ACTION_SEND);
+                            intent.setType("text/plain");
+                            intent.putExtra(Intent.EXTRA_SUBJECT, "Sharing movie trailer");
+                            intent.putExtra(Intent.EXTRA_TEXT, getItem(i).Link());
+                            startActivity(Intent.createChooser(intent, "Share this movie trailer"));
+                        }
+                    });
+                }
 
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -348,8 +360,18 @@ public class MovieDetails extends AppCompatActivity implements MovieDetailsExtra
         }
 
         class ViewHolder{
+            @BindView(R.id.imgIcon)
             ImageView imgIcon;
+
+            @BindView(R.id.trailerLink)
             TextView linkDescription;
+
+            @BindView(R.id.trailer_share)
+            ImageView imgShare;
+
+            public ViewHolder(View view) {
+                ButterKnife.bind(this, view);
+            }
         }
     }
 }

@@ -7,7 +7,8 @@
 <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.scareweb.popularmovies.MovieDetails">
+    tools:context="it.scareweb.popularmovies.MovieDetails"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/details_big_title"
@@ -16,7 +17,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:textSize="18sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -97,6 +98,64 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/textView6"
         app:layout_constraintTop_toBottomOf="@+id/textView6"
-        tools:text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." />
+        tools:text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim."
+        android:layout_marginRight="8dp" />
+
+    <ImageButton
+        android:id="@+id/add_to_favourites"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintLeft_toRightOf="@id/details_movie_poster"
+        app:layout_constraintBottom_toBottomOf="@+id/details_movie_poster"
+        app:srcCompat="@android:drawable/btn_star" />
+
+    <TextView
+        android:id="@+id/details_trailers_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/details_trailers_label"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/details_movie_poster"
+        app:layout_constraintTop_toBottomOf="@+id/details_movie_poster" />
+
+    <ListView
+        android:id="@+id/details_trailers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@+id/details_trailers_label"
+        app:layout_constraintTop_toBottomOf="@+id/details_trailers_label"
+        />
+
+    <TextView
+        android:id="@+id/details_reviews_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/reviews_label"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/details_trailers_label"
+        app:layout_constraintTop_toBottomOf="@+id/details_trailers"
+        />
+
+    <TextView
+        android:id="@+id/details_reviews"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/details_reviews_label"
+        app:layout_constraintTop_toBottomOf="@+id/details_reviews_label"
+        tools:layout_editor_absoluteY="285dp"
+        tools:text="Review 1... Review2..."
+        android:autoLink="web"
+        android:layout_marginRight="4dp" />
 </android.support.constraint.ConstraintLayout>
 </ScrollView>

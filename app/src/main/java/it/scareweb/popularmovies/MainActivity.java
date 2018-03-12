@@ -35,9 +35,11 @@ import it.scareweb.popularmovies.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String MovieDbUrl = SettingsAPI.BASE_URL;
+    private static final String MovieDbUrl = SettingsAPI.BASE_URL;
 
-    private final String ORDER_BY_KEY = "ORDER_BY";
+    private static final String ORDER_BY_KEY = "ORDER_BY";
+
+    private static final String SHOW_FAVOURITES = "SHOW_FAVOURITES";
 
     private String MovieDbCurrentOption = SettingsAPI.OPTION_POPULAR;
 
@@ -79,12 +81,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        showFavourites=false;
-
         if (savedInstanceState != null) {
             this.Popular = savedInstanceState.getBoolean(ORDER_BY_KEY);
+            this.showFavourites = savedInstanceState.getBoolean(SHOW_FAVOURITES);
         } else {
             this.Popular = true;
+            this.showFavourites = false;
         }
 
         setContentView(R.layout.activity_main);
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(ORDER_BY_KEY, this.Popular);
+        outState.putBoolean(SHOW_FAVOURITES,this.showFavourites);
     }
 
     private boolean config() {

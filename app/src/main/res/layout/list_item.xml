@@ -12,10 +12,21 @@
         android:background="#CCCCCC"
         app:srcCompat="@android:drawable/ic_media_play"
         android:backgroundTint="@android:color/transparent"/>
+
     <TextView
         android:id="@+id/trailerLink"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:text="Prova" />
+
+    <ImageView
+        android:id="@+id/trailer_share"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Prova"
-        android:layout_gravity="center_vertical"/>
+        app:srcCompat="?attr/actionModeShareDrawable"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="30dp"
+        android:visibility="gone"/>
 </LinearLayout>
