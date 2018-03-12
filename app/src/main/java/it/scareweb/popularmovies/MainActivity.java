@@ -43,9 +43,13 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
     private static final String SHOW_FAVOURITES = "SHOW_FAVOURITES";
 
+    private static final String MOVIE_LIST = "MOVIE_LIST";
+
+    private static final String CURRENT_PAGE = "CURRENT_PAGE";
+
     private String MovieDbCurrentOption = SettingsAPI.OPTION_POPULAR;
 
-    private List<Movie> movieList;
+    private ArrayList<Movie> movieList;
 
     private MovieListAdapter movieListAdapter;
 
@@ -74,28 +78,19 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
     MenuItem menuTopRated;
 
-    private int queryPage=1;
+    private int queryPage;
 
     private boolean showFavourites;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            this.Popular = savedInstanceState.getBoolean(ORDER_BY_KEY);
-            this.showFavourites = savedInstanceState.getBoolean(SHOW_FAVOURITES);
-        } else {
-            this.Popular = true;
-            this.showFavourites = false;
-        }
-
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
         context = this;
-        movieList = new ArrayList<>();
+
         movieListAdapter = new MovieListAdapter(this);
 
         final GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns());
@@ -106,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(movieListAdapter);
-
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
@@ -136,7 +130,19 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             }
         });
 
-        getAllMovies();
+        if (savedInstanceState != null) {
+            this.Popular = savedInstanceState.getBoolean(ORDER_BY_KEY);
+            this.showFavourites = savedInstanceState.getBoolean(SHOW_FAVOURITES);
+            this.queryPage = savedInstanceState.getInt(CURRENT_PAGE);
+            this.movieList = savedInstanceState.getParcelableArrayList(MOVIE_LIST);
+            movieListAdapter.setMovieTitles(movieList);
+        } else {
+            this.Popular = true;
+            this.showFavourites = false;
+            this.queryPage = 1;
+            movieList = new ArrayList<>();
+            getAllMovies();
+        }
     }
 
     /*
@@ -158,7 +164,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     protected void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(ORDER_BY_KEY, this.Popular);
-        outState.putBoolean(SHOW_FAVOURITES,this.showFavourites);
+        outState.putBoolean(SHOW_FAVOURITES, this.showFavourites);
+        outState.putParcelableArrayList(MOVIE_LIST, this.movieList);
+        outState.putInt(CURRENT_PAGE, this.queryPage);
     }
 
     private boolean config() {
