@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.view.Menu;
@@ -97,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         movieList = new ArrayList<>();
         movieListAdapter = new MovieListAdapter(this);
 
-        final GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        final GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns());
+
         layoutManager.setOrientation(GridLayoutManager.VERTICAL);
         layoutManager.setReverseLayout(false);
 
@@ -135,6 +137,21 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         });
 
         getAllMovies();
+    }
+
+    /*
+    * Get this idea from my reviewer! Great function!
+    */
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int widthDivider = 300;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) {
+            return 2;
+        }
+        return nColumns;
     }
 
     @Override
