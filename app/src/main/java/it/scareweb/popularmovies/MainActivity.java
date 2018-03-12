@@ -145,6 +145,15 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(this.showFavourites) {
+            this.movieList.clear();
+            getAllMovies();
+        }
+    }
+
     /*
     * Get this idea from my reviewer! Great function!
     */

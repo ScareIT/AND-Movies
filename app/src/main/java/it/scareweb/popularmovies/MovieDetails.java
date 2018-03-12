@@ -124,6 +124,11 @@ public class MovieDetails extends AppCompatActivity implements MovieDetailsExtra
         detailsExtra.FillTrailers(selectedMovie.getId());
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
+
     private void setupAddToFavouritesIcon() {
         movieSaved = movieIsFavourite();
         addToFavouritesIcon.setOnClickListener(addToFavouritesListener());
