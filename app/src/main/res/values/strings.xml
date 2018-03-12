@@ -16,4 +16,6 @@
     <string name="reviews_label">Reviews:</string>
     <string name="review_by">Review by</string>
     <string name="full_review">Full review available here</string>
+    <string name="add_to_favourites">Add to favourites:</string>
+    <string name="no_connection_alert_favourites">..but you can still check your favourite movies, if you added any...</string>
 </resources>

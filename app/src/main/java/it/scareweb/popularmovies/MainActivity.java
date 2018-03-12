@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.no_connection_alert)
     TextView tNoConnection;
 
+    @BindView(R.id.no_connection_alert_favourites)
+    TextView tNoConnectionAddOn;
+
     @BindView(R.id.no_favourites_alert)
     TextView tNoFavourites;
 
@@ -174,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (!NetworkUtils.isInternetAvailable(this)) {
                 tNoConnection.setVisibility(View.VISIBLE);
+                tNoConnectionAddOn.setVisibility(View.VISIBLE);
                 return;
             }
 
@@ -181,6 +185,9 @@ public class MainActivity extends AppCompatActivity {
 
             new GetMovies(page).execute(builtUri);
         } else if (this.showFavourites) {
+            tIntro.setVisibility(View.VISIBLE);
+            tNoConnection.setVisibility(View.GONE);
+            tNoConnectionAddOn.setVisibility(View.GONE);
             getFavouritesMovies();
         }
     }
